@@ -73,12 +73,12 @@ do
 	# Increase counter.
 	i=$((i+1))
 	# Edit command string.
-	com+="$first_name.$last_name@t-systems.com' -e 2021-08-31 $user_name"
+	com+="$first_name.$last_name@t-systems.com' -e 2021-08-31  $user_name"
 	echo $com
 
 	eval $com &&
 	# Set password to Start123
-	echo "Start123" | passwd --stdin $user_name &&
+	echo "$user_name:Start123" | sudo chpasswd &&
 
 	sudo chage -d 0 $user_name
 
