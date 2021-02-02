@@ -1,11 +1,23 @@
 #!/bin/bash
 
-input="/home/peter/Scripts/users.txt"
+# Path to a text file with users.
+input="/home/peter/Scripts/addusers/users.txt"
+
+# Create group devops with gid set to 700.
+eval "sudo groupadd -g 700 devops"
+
+sudo mkdir /var/www/project2021
+sudo chgrp devops /var/www/project2021
+sudo chmod g+s /var/www/project2021
+sudo touch /var/www/project2021/index.html
 
 # VARIABLES
 first_name=""
 last_name=""
 user_name=""
+# Start creating users with this uid.
+# It will increment automatically.
+user_id=701
 
 # BOOLEANS
 append_first=true
@@ -18,7 +30,7 @@ i=1
 
 while IFS= read -r line
 do
-	com="sudo useradd -m -c '$line, "
+	com="sudo useradd -m -u $user_id -c '$line, "
 
 	echo "$i: $line"
 
@@ -80,7 +92,14 @@ do
 	# Set password to Start123
 	echo "$user_name:Start123" | sudo chpasswd &&
 
-	sudo chage -d 0 $user_name
+    # Force user to change his password at next login.
+	sudo chage -d 0 $user_name &&
+
+    # Add user to groups: sudo and devops.
+    sudo usermod -aG sudo,devops $user_name
+
+    # Update some variables.
+    user_id=$((user_id+1))
 
 	# Reset values.
 	com=""
